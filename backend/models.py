@@ -60,6 +60,22 @@ class User(Base):
         """
         self.access_token = random_auth_key()
 
+    def to_json(self, access_token=False, direction=None):
+        data = {
+            'id': self.id,
+            'email': self.email,
+            'created': self.created,
+            'expected_calories': self.expected_calories
+        }
+
+        if direction != 'meal':
+            data['meals'] = [m.to_json(direction='user') for m in self.meals]
+
+        if access_token:
+            data['access_token'] = self.access_token
+
+        return data
+
 class Meal(Base):
     __tablename__ = 'meal'
 
@@ -70,6 +86,13 @@ class Meal(Base):
     def __repr__(self):
         return "<Meal(%s, name=%s, cal=%s)" % (self.id, self.name,
                                                self.calories)
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'calories': self.calories
+        }
 
 class UserMeal(Base):
     __tablename__ = 'user_meal'
@@ -86,6 +109,17 @@ class UserMeal(Base):
         return "<UserMeal(user=%s, meal=%s, time=%s, deleted=%s)" % (
             self.user, self.meal, self.time, self.deleted
         )
+
+    def to_json(self, direction=None):
+        data = {
+            'time': self.time,
+            'deleted': self.deleted
+        }
+
+        if direction == 'user':
+            data['meal'] = self.meal.to_json()
+        elif direction == 'meal':
+            data['user'] = self.user.to_json()
 
 if __name__ == '__main__':
     Base.metadata.create_all(engine)

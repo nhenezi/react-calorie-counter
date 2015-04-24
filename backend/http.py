@@ -2,7 +2,7 @@ import bcrypt
 import cherrypy
 import models
 
-cherrypy.config.update('sever.confg')
+cherrypy.config.update('server.conf')
 
 import json
 import datetime
