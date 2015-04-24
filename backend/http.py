@@ -23,6 +23,7 @@ def json_handler(*args, **kwargs):
     return json_encoder.iterencode(value)
 
 class Auth(object):
+    exposed = True
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out(handler=json_handler)
     def GET(self, access_token):
@@ -76,6 +77,7 @@ class Meal(object):
     pass
 
 class User(object):
+    exposed = True
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out(handler=json_handler)
     def POST(self):
