@@ -193,7 +193,6 @@ class GetMealTest(unittest.TestCase):
         data = {
             'access_token': 'ffff',
         }
-        session.close()
         r = requests.get(
             base_url + 'meal',
             params=data,
@@ -235,6 +234,79 @@ class GetMealTest(unittest.TestCase):
         self.assertIn('id', r.json())
         self.assertIn('name', r.json())
 
+
+class PostMealTest(unittest.TestCase):
+    def setUp(self):
+        fixtures.reload()
+
+    def test_invalid_access_token(self):
+        data = {
+            'access_token': 'ffff',
+        }
+        r = requests.get(
+            base_url + 'meal',
+            params=data,
+        )
+
+        self.assertTrue('success' in r.json())
+        self.assertFalse(r.json()['success'])
+
+    def test_missing_name_param(self):
+        session = models.Session()
+        user1 = session.query(models.User).filter_by(email='user1@lc.com').first()
+        data = {
+            'calories': 200,
+            'access_token': user1.access_token,
+        }
+        session.close()
+        r = requests.post(
+            base_url + 'meal',
+            data=simplejson.dumps(data),
+            headers={'content-type': 'application/json'}
+        )
+
+        self.assertIn('success', r.json())
+        self.assertFalse(r.json()['success'])
+
+    def test_missing_calories_param(self):
+        session = models.Session()
+        user1 = session.query(models.User).filter_by(email='user1@lc.com').first()
+        data = {
+            'name': 'Orange',
+            'access_token': user1.access_token,
+        }
+        session.close()
+        r = requests.post(
+            base_url + 'meal',
+            data=simplejson.dumps(data),
+            headers={'content-type': 'application/json'}
+        )
+
+        self.assertIn('success', r.json())
+        self.assertFalse(r.json()['success'])
+
+    def test_success_creation(self):
+        session = models.Session()
+        user1 = session.query(models.User).filter_by(email='user1@lc.com').first()
+        data = {
+            'name': 'Orange',
+            'calories': 50,
+            'access_token': user1.access_token,
+        }
+        session.close()
+        r = requests.post(
+            base_url + 'meal',
+            data=simplejson.dumps(data),
+            headers={'content-type': 'application/json'}
+        )
+
+        self.assertIn('calories', r.json())
+        self.assertIn('id', r.json())
+        self.assertIn('name', r.json())
+
+        self.assertEqual(r.json()['name'], 'Orange')
+        self.assertEqual(r.json()['calories'], 50)
+        self.assertTrue(r.json()['id'])
 
 
 if __name__ == '__main__':

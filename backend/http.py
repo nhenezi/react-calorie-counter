@@ -79,7 +79,7 @@ class Auth(object):
 @cherrypy.popargs('meal_id')
 class Meal(object):
     exposed = True
-    @cherrypy.tools.json_in()
+
     @cherrypy.tools.json_out(handler=json_handler)
     def GET(self, access_token=None, meal_id=None):
         session = models.Session()
@@ -99,6 +99,37 @@ class Meal(object):
                 return {}
             session.close()
             return meal.to_json()
+
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out(handler=json_handler)
+    def POST(self):
+        data = cherrypy.request.json
+        if 'access_token' not in data:
+            return {'success': False, 'error': 'Invalid access_token'}
+
+        session = models.Session()
+        user = models.User.get_from_token(data['access_token'], session)
+        if not user:
+            session.close()
+            return {'success': False, 'error': 'Invalid access_token'}
+
+        if 'name' not in data:
+            session.close()
+            return {'success': False, 'error': 'Missing name attribute'}
+        if 'calories' not in data:
+            session.close()
+            return {'success': False, 'error': 'Calories name attribute'}
+
+        meal = models.Meal(
+            name=data['name'],
+            calories=data['calories']
+        )
+        session.add(meal)
+        session.commit()
+        resp = meal.to_json()
+        session.close()
+
+        return resp
 
 
 class User(object):
