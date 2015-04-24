@@ -82,6 +82,12 @@ class Meal(object):
 
     @cherrypy.tools.json_out(handler=json_handler)
     def GET(self, access_token=None, meal_id=None):
+        """
+        Retrieves meail information.
+
+        access_token is required for this endpoint.
+        If meal_id is not set it will retrieve a list of all meals
+        """
         session = models.Session()
         user = models.User.get_from_token(access_token, session)
         if not user:
@@ -103,6 +109,10 @@ class Meal(object):
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out(handler=json_handler)
     def POST(self):
+        """
+        Creates a new meal and assigns it to user
+        """
+
         data = cherrypy.request.json
         if 'access_token' not in data:
             return {'success': False, 'error': 'Invalid access_token'}
@@ -138,6 +148,9 @@ class Meal(object):
 
     @cherrypy.tools.json_out(handler=json_handler)
     def DELETE(self, access_token=None, meal_id=None):
+        """
+        Marks meal as deleted
+        """
         if meal_id is None:
             return {'success': False, 'error': 'meal_id has to be specified'}
 
@@ -207,6 +220,9 @@ class User(object):
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out(handler=json_handler)
     def PUT(self):
+        """
+        Updates user settings
+        """
         data = cherrypy.request.json
 
         if 'access_token' not in data:
