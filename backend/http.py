@@ -1,6 +1,7 @@
 import bcrypt
 import cherrypy
 import models
+from validate_email import validate_email
 
 cherrypy.config.update('server.conf')
 
@@ -92,6 +93,8 @@ class User(object):
             return {'success': False, 'error': 'Email cannot be empty'}
         if 'password' not in data:
             return {'success': False, 'error': 'Password cannot be empty'}
+        if not validate_email(data['email']):
+            return {'success': False, 'error': 'Invalid email'}
 
         session = models.Session()
         email = data['email'].lower()
