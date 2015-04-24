@@ -66,7 +66,7 @@ class Auth(object):
             return {'success': False, 'error': 'Invalid username or password'}
 
         user.generate_new_token()
-        resp = user.to_json()
+        resp = user.to_json(access_token=True)
         session.close()
 
         return {'success': True, 'user': resp}
@@ -76,7 +76,40 @@ class Meal(object):
     pass
 
 class User(object):
-    pass
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out(handler=json_handler)
+    def POST(self):
+        """
+        Creates new user
+        """
+
+        data = cherrypy.request.json
+        if 'email' not in data:
+            return {'success': False, 'error': 'Email cannot be empty'}
+        if 'password' not in data:
+            return {'success': False, 'error': 'Password cannot be empty'}
+
+        session = models.Session()
+        email = data['email'].lower()
+        password = data['password']
+
+        user = session.query(models.User).filter_by(email=email).first()
+        if user:
+            return {'success': False,
+                    'error': 'User with that email already exists'}
+
+        user = models.User(
+            email=email,
+            password=bcrypt.hashpw(password, bcrypt.gensalt(12))
+        )
+
+        session.add(user)
+        session.commit()
+        resp = user.to_json(access_token=True)
+        session.close()
+
+        return {'success': True, 'user': resp}
+
 
 class Root(object):
     def __init__(self):
