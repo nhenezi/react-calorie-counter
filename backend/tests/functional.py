@@ -67,7 +67,7 @@ class RegistrationTest(unittest.TestCase):
         self.assertTrue('user' in r.json())
         self.assertTrue(r.json()['user']['email'] == 'user3@lc.com')
 
-class AuthenticationTest(unittest.TestCase):
+class LoginTest(unittest.TestCase):
     def setUp(self):
         fixtures.reload()
 
@@ -123,7 +123,6 @@ class AuthenticationTest(unittest.TestCase):
         )
 
         self.assertTrue('success' in r.json())
-        print r.json()
         self.assertFalse(r.json()['success'])
 
     def test_successful_login(self):
@@ -141,6 +140,50 @@ class AuthenticationTest(unittest.TestCase):
         self.assertTrue(r.json()['success'])
         self.assertTrue('user' in r.json())
         self.assertTrue(r.json()['user']['email'] == 'user1@lc.com')
+
+class GetAuthTest(unittest.TestCase):
+    def setUp(self):
+        fixtures.reload()
+
+    def test_invalid_access_token(self):
+        data = {
+            'access_token': 'nvalid',
+        }
+        r = requests.get(
+            base_url + 'auth',
+            params=data,
+        )
+
+        self.assertTrue('success' in r.json())
+        self.assertFalse(r.json()['success'])
+
+    def test_missing_access_token(self):
+        data = {
+        }
+        r = requests.get(
+            base_url + 'auth',
+            params=data,
+        )
+
+        self.assertTrue(r.status_code == 404)
+
+    def test_successful_access_token(self):
+        session = models.Session()
+        user1 = session.query(models.User).filter_by(email='user1@lc.com').first()
+        data = {
+            'access_token': user1.access_token,
+        }
+        session.close()
+        r = requests.get(
+            base_url + 'auth',
+            params=data,
+        )
+
+        self.assertTrue('success' in r.json())
+        self.assertTrue(r.json()['success'])
+        self.assertTrue('user' in r.json())
+        self.assertTrue(r.json()['user']['email'] == 'user1@lc.com')
+
 
 if __name__ == '__main__':
     unittest.main()
