@@ -105,7 +105,7 @@ class UserMeal(Base):
     user_id = Column(Integer, ForeignKey('user.id'), primary_key=True)
     meal_id = Column(Integer, ForeignKey('meal.id'), primary_key=True)
     time = Column(DateTime, default=datetime.datetime.utcnow)
-    deleted = Column(Boolean)
+    deleted = Column(Boolean, default=False)
 
     user = relationship('User')
     meal = relationship('Meal')

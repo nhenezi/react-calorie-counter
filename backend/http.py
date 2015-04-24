@@ -125,12 +125,45 @@ class Meal(object):
             calories=data['calories']
         )
         session.add(meal)
+        user_meal = models.UserMeal(
+            user=user,
+            meal=meal
+        )
+        session.add(user_meal)
         session.commit()
         resp = meal.to_json()
         session.close()
 
         return resp
 
+    @cherrypy.tools.json_out(handler=json_handler)
+    def DELETE(self, access_token=None, meal_id=None):
+        if meal_id is None:
+            return {'success': False, 'error': 'meal_id has to be specified'}
+
+        session = models.Session()
+        user = models.User.get_from_token(access_token, session)
+        if not user:
+            session.close()
+            return {'success': False, 'error': 'Invalid access_token'}
+
+        meal = session.query(models.Meal).get(meal_id)
+        if not meal:
+            session.close()
+            return {'success': False, 'error': 'Invalid meal_id'}
+
+        for user_meal in user.meals:
+            if user_meal.meal == meal:
+                user_meal.deleted = True
+                session.commit()
+                resp = {'success': True, 'meal': meal.to_json()}
+                session.close()
+
+                return resp
+
+
+        session.close()
+        return {'success': False, 'error': 'Invalid meal_id'}
 
 class User(object):
     exposed = True
@@ -170,6 +203,35 @@ class User(object):
         session.close()
 
         return {'success': True, 'user': resp}
+
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out(handler=json_handler)
+    def PUT(self):
+        data = cherrypy.request.json
+
+        if 'access_token' not in data:
+            return {'success': False, 'error': 'Invalid access_token'}
+
+        session = models.Session()
+        user = models.User.get_from_token(data['access_token'], session)
+        if not user:
+            session.close()
+            return {'success': False, 'error': 'Invalid access_token'}
+
+        if 'expected_calories' in data:
+            user.expected_calories = data['expected_calories']
+        if 'email' in data:
+            if not validate_email(data['email']):
+                session.close()
+                return {'success': False, 'error': 'Invalid email'}
+            user.email = data['email']
+
+        session.commit()
+        resp = user.to_json()
+        session.close()
+
+        return {'success': True, 'user': resp}
+
 
 
 class Root(object):
