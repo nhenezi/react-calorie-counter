@@ -18,15 +18,15 @@ def reload():
 def init_users():
     session = models.Session()
     user1 = models.User(
-        email='test1@lc.com',
-        password=bcrypt.hashpw('test', bcrypt.gensalt(12)),
+        email='user1@lc.com',
+        password=bcrypt.hashpw('test'.encode('utf-8'), bcrypt.gensalt(12)),
         expected_calories=1500
     )
     session.add(user1)
 
     user2 = models.User(
-        email='test2@lc.com',
-        password=bcrypt.hashpw('test', bcrypt.gensalt(12)),
+        email='user2@lc.com',
+        password=bcrypt.hashpw('test'.encode('utf-8'), bcrypt.gensalt(12)),
         expected_calories=2300
     )
     session.add(user2)

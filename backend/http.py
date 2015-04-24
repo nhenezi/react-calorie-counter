@@ -55,7 +55,7 @@ class Auth(object):
             return {'success': False, 'error': 'Invalid username or password'}
 
         email = data['email'].lower()
-        password = data['password']
+        password = data['password'].encode('utf-8')
 
         session = models.Session()
         user = session.query(models.User).filter_by(email=email).first()
@@ -63,14 +63,16 @@ class Auth(object):
             session.close()
             return {'success': False, 'error': 'Invalid username or password'}
 
-        if not bcrypt.hashpw(password, user.password) == user.password:
-            return {'success': False, 'error': 'Invalid username or password'}
+        if bcrypt.hashpw(password, user.password.encode('utf-8')) == user.password:
+            user.generate_new_token()
+            resp = user.to_json(access_token=True)
+            session.close()
 
-        user.generate_new_token()
-        resp = user.to_json(access_token=True)
+            return {'success': True, 'user': resp}
+
         session.close()
+        return {'success': False, 'error': 'Invalid username or password'}
 
-        return {'success': True, 'user': resp}
 
 
 class Meal(object):
@@ -97,12 +99,13 @@ class User(object):
 
         user = session.query(models.User).filter_by(email=email).first()
         if user:
+            session.close()
             return {'success': False,
                     'error': 'User with that email already exists'}
 
         user = models.User(
             email=email,
-            password=bcrypt.hashpw(password, bcrypt.gensalt(12))
+            password=bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(12))
         )
 
         session.add(user)

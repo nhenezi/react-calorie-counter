@@ -20,7 +20,7 @@ conf_f.close()
 engine = create_engine(
     'postgresql://%s:%s@%s/%s'
     % (db_conf['user'], db_conf['password'], db_conf['host'],
-       db_conf['db_name']))
+       db_conf['db_name']), client_encoding='utf-8')
 
 Session = sessionmaker(bind=engine)
 Base = declarative_base()
