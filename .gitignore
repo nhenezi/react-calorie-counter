@@ -1,2 +1,4 @@
 backend/venv
+backend/db.conf
+backend/server.conf
 *.pyc
