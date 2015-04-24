@@ -36,7 +36,7 @@ class Auth(object):
         user = models.User.get_from_token(access_token, session)
         resp = {}
         if user:
-            resp = user.to_json()
+            resp = {'success': True, 'user': user.to_json()}
         else:
             resp = {'success': False}
         session.close()
