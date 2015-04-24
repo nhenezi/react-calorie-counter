@@ -27,7 +27,7 @@ class Auth(object):
     exposed = True
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out(handler=json_handler)
-    def GET(self, access_token):
+    def GET(self, access_token=None):
         """
         Retrieves authentication status.
 
@@ -76,8 +76,30 @@ class Auth(object):
 
 
 
+@cherrypy.popargs('meal_id')
 class Meal(object):
-    pass
+    exposed = True
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out(handler=json_handler)
+    def GET(self, access_token=None, meal_id=None):
+        session = models.Session()
+        user = models.User.get_from_token(access_token, session)
+        if not user:
+            session.close()
+            return {'success': False, 'error': 'Invalid access_token'}
+
+        if meal_id == None:
+            meals = [m.to_json() for m in session.query(models.Meal).all()]
+            session.close()
+            return meals
+        else:
+            meal = session.query(models.Meal).get(meal_id)
+            if not meal_id:
+                session.close()
+                return {}
+            session.close()
+            return meal.to_json()
+
 
 class User(object):
     exposed = True

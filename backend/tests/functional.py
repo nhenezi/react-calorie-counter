@@ -165,7 +165,8 @@ class GetAuthTest(unittest.TestCase):
             params=data,
         )
 
-        self.assertTrue(r.status_code == 404)
+        self.assertTrue('success' in r.json())
+        self.assertFalse(r.json()['success'])
 
     def test_successful_access_token(self):
         session = models.Session()
@@ -183,6 +184,57 @@ class GetAuthTest(unittest.TestCase):
         self.assertTrue(r.json()['success'])
         self.assertTrue('user' in r.json())
         self.assertTrue(r.json()['user']['email'] == 'user1@lc.com')
+
+class GetMealTest(unittest.TestCase):
+    def setUp(self):
+        fixtures.reload()
+
+    def invalid_access_token(self):
+        data = {
+            'access_token': 'ffff',
+        }
+        session.close()
+        r = requests.get(
+            base_url + 'meal',
+            params=data,
+        )
+
+        self.assertTrue('success' in r.json())
+        self.assertFalse(r.json()['success'])
+
+    def test_get_all(self):
+        session = models.Session()
+        user1 = session.query(models.User).filter_by(email='user1@lc.com').first()
+        data = {
+            'access_token': user1.access_token,
+        }
+        session.close()
+        r = requests.get(
+            base_url + 'meal',
+            params=data,
+        )
+
+        self.assertTrue(len(r.json()) > 0)
+        self.assertIn('calories', r.json()[0])
+        self.assertIn('id', r.json()[0])
+        self.assertIn('name', r.json()[0])
+
+    def test_get_one(self):
+        session = models.Session()
+        user1 = session.query(models.User).filter_by(email='user1@lc.com').first()
+        data = {
+            'access_token': user1.access_token,
+        }
+        session.close()
+        r = requests.get(
+            base_url + 'meal/1/',
+            params=data,
+        )
+
+        self.assertIn('calories', r.json())
+        self.assertIn('id', r.json())
+        self.assertIn('name', r.json())
+
 
 
 if __name__ == '__main__':
