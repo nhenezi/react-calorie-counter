@@ -1,0 +1,6 @@
+[global]
+server.socket_port = 3005
+
+[/]
+tools.gzip.on: True
+tools.sessions.on: True
