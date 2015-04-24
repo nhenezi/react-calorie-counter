@@ -7,9 +7,14 @@ import yaml
 import datetime
 import random
 import string
+import os
 
 conf_f = file('./db.conf', 'r')
-db_conf = yaml.load(conf_f)['database']
+db_conf = yaml.load(conf_f)
+if os.environ.get('TEST'):
+    db_conf = db_conf['database_test']
+else:
+    db_conf = db_conf['database']
 conf_f.close()
 
 engine = create_engine(

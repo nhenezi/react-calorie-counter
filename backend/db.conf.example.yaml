@@ -3,3 +3,8 @@ database:
   user: "root"
   password: "pass"
   db_name: "calorie_counter"
+database_test:
+  host: "localhost"
+  user: "root"
+  password: "pass"
+  db_name: "calorie_counter_test"
