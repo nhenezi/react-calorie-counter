@@ -47,6 +47,19 @@ class User(Base):
     def __repr__(self):
         return "<User(%s, email=%s)>" % (self.id, self.email)
 
+    @staticmethod
+    def get_from_token(token, session):
+        """
+        Retrieves user from tokenk
+        """
+        return session.query(User).filter(User.access_token == token).first()
+
+    def generate_new_token(self):
+        """
+        Generates new access token
+        """
+        self.access_token = random_auth_key()
+
 class Meal(Base):
     __tablename__ = 'meal'
 
