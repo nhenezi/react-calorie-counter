@@ -1,0 +1,17 @@
+header {
+  margin-bottom: 50px;
+}
+
+footer {
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+}
+
+.loginForm {
+  margin-top: 50px;
+}
+
+.loginForm .btn-primary {
+  margin-right: 5px;
+}

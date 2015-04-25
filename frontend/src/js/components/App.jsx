@@ -12,7 +12,9 @@ class App extends React.Component {
     return (
       <div>
        <Header />
-       <Router.RouteHandler />
+         <div className="container">
+           <Router.RouteHandler />
+         </div>
        <Footer />
       </div>
     );
