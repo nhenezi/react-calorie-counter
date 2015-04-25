@@ -177,7 +177,7 @@ class Meal(object):
             meal.time = data['time']
 
         session.commit()
-        resp = meal.to_json()
+        resp = {'success': True, 'meal': meal.to_json()}
         session.close()
 
         return resp
