@@ -1,0 +1,27 @@
+{
+  "name": "calorie-counter",
+  "version": "0.0.1",
+  "description": "",
+  "main": "gulpfile.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "browserify": "^9.0.8",
+    "concat": "^1.0.0",
+    "cookies-js": "^1.2.1",
+    "gulp": "^3.8.11",
+    "react": "^0.13.2",
+    "react-router": "^0.13.2",
+    "reactify": "^1.1.0",
+    "reflux": "^0.2.7",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "None"
+}
