@@ -1,4 +1,7 @@
 backend/venv
 backend/db.conf
 backend/server.conf
+frontend/build
+frontend/bower_components
+frontend/node_modules
 *.pyc
