@@ -146,6 +146,48 @@ class Meal(object):
 
         return resp
 
+
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out(handler=json_handler)
+    def PUT(self):
+        """
+        Updates meal information
+        """
+
+        data = cherrypy.request.json
+        if 'access_token' not in data:
+            return {'success': False, 'error': 'Invalid access_token'}
+
+        session = models.Session()
+        user = models.User.get_from_token(data['access_token'], session)
+        if not user:
+            session.close()
+            return {'success': False, 'error': 'Invalid access_token'}
+
+        if 'name' not in data:
+            session.close()
+            return {'success': False, 'error': 'Missing name attribute'}
+        if 'calories' not in data:
+            session.close()
+            return {'success': False, 'error': 'Calories name attribute'}
+
+        meal = models.Meal(
+            name=data['name'],
+            calories=data['calories']
+        )
+        session.add(meal)
+        user_meal = models.UserMeal(
+            user=user,
+            meal=meal
+        )
+        session.add(user_meal)
+        session.commit()
+        resp = meal.to_json()
+        session.close()
+
+        return resp
+
+
     @cherrypy.tools.json_out(handler=json_handler)
     def DELETE(self, access_token=None, meal_id=None):
         """
