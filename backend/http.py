@@ -66,6 +66,7 @@ class Auth(object):
 
         if bcrypt.hashpw(password, user.password.encode('utf-8')) == user.password:
             user.generate_new_token()
+            session.commit()
             resp = user.to_json(access_token=True)
             session.close()
 

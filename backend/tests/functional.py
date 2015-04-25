@@ -210,6 +210,10 @@ class LoginTest(unittest.TestCase):
         self.assertFalse(r.json()['success'])
 
     def test_successful_login(self):
+        session = models.Session()
+        user1 = session.query(models.User).filter_by(email='user1@lc.com').first()
+        old_access_token = user1.access_token
+        session.close()
         data = {
             'email': 'user1@lc.com',
             'password': 'test'
@@ -224,6 +228,7 @@ class LoginTest(unittest.TestCase):
         self.assertTrue(r.json()['success'])
         self.assertTrue('user' in r.json())
         self.assertTrue(r.json()['user']['email'] == 'user1@lc.com')
+        self.assertNotEqual(old_access_token, r.json()['user']['access_token'])
 
 class GetAuthTest(unittest.TestCase):
     def setUp(self):
