@@ -25,13 +25,15 @@ class Dashboard extends React.Component {
       actions.updateMeal.completed.listen(this.loadMeals),
       actions.deleteMeal.completed.listen(this.loadMeals),
       actions.login.completed.listen(this.updateUserInfo),
-      actions.auth.completed.listen(this.updateUserInfo)
+      actions.auth.completed.listen(this.updateUserInfo),
+      actions.updateInfo.completed.listen(this.updateUserInfo)
     ];
 
     this.loadMeals();
   }
 
   updateUserInfo(resp) {
+    console.info("Updating user info");
     this.setState({
       user: resp.user
     });
@@ -62,7 +64,10 @@ class Dashboard extends React.Component {
       <h4 className="red">{calorie_status}</h4>;
     return (
       <div className="row dashboard">
-        <div className="col-sm-6 col-sm-offset-3">
+        <div className="col-sm-3">
+          <UserSettings user={this.state.user} />
+        </div>
+        <div className="col-sm-6">
           <div className="panel panel-default">
             <div className="panel-heading">
               Meals<span className="pull-right">{message}</span>
@@ -78,6 +83,73 @@ class Dashboard extends React.Component {
         </div>
         <div className="col-sm-3">
           <MealEditor />
+        </div>
+      </div>
+    );
+  }
+}
+
+class UserSettings extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.props = {
+      user: {
+        expected_calories: ""
+      }
+    };
+
+    this.state = {
+      expected_calories: ""
+    };
+
+    this.onSubmitHandler = this.onSubmitHandler.bind(this);
+    this.updateCalories = this.updateCalories.bind(this);
+  }
+
+  updateCalories(e) {
+    this.setState({
+      expected_calories: e.target.value
+    });
+  }
+
+  componentWillReceiveProps(obj) {
+    console.log('Setting state', this.state, obj);
+    this.setState({
+      expected_calories: obj.user.expected_calories
+    });
+  }
+
+  onSubmitHandler(e) {
+    e.preventDefault();
+
+    actions.updateInfo(parseInt(this.state.expected_calories, 10));
+  }
+
+  render() {
+    return (
+      <div className="panel panel-default">
+        <div className="panel-heading">
+          Settings
+        </div>
+        <div className="panel-body">
+          <div className="row">
+            <div className="col-sm-12">
+              <form className="form" onSubmit={this.onSubmitHandler}>
+                <div className="form-group">
+                  <input type="number" ref="calories" placeholder="Expected calories..."
+                    className="form-control" onChange={this.updateCalories}
+                    value={this.state.expected_calories}>
+                  </input>
+                </div>
+                <div className="form-group">
+                  <button type='submit' className="btn btn-default">
+                    Update information
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     );

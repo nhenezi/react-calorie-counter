@@ -6,6 +6,7 @@ const async_actions = [
   'login',
   'auth',
   'register',
+  'updateInfo',
 
   'loadMeals',
   'createMeal',

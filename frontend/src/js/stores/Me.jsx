@@ -12,6 +12,7 @@ var MeStore = Reflux.createStore({
   init: function() {
     this.listenTo(actions.login, 'login');
     this.listenTo(actions.register, 'register');
+    this.listenTo(actions.updateInfo, 'updateInfo');
 
     actions.login.completed.listen(this.onLogin);
     actions.register.completed.listen(this.onLogin);
@@ -53,6 +54,12 @@ var MeStore = Reflux.createStore({
     const data = {email, password};
     Http.post('user', data, actions.register.completed,
               actions.register.failed);
+  },
+
+  updateInfo: function(expected_calories) {
+    const data = {expected_calories};
+    Http.put('user', data, actions.updateInfo.completed,
+            actions.updateInfo.failed);
   },
 
   authenticate: function() {
