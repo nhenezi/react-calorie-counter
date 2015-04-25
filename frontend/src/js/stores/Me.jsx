@@ -20,6 +20,7 @@ var MeStore = Reflux.createStore({
 
     this.access_token = false;
     this.logged_in = false;
+    this.data = {};
   },
 
   onLogin: function(resp) {
@@ -28,6 +29,7 @@ var MeStore = Reflux.createStore({
     }
 
     this.access_token = resp.user.access_token;
+    this.data = resp.user;
     this.logged_in = true;
   },
 
@@ -35,6 +37,7 @@ var MeStore = Reflux.createStore({
     if (resp.success === true) {
       this.access_token = Cookies.get('access_token');
       this.logged_in = true;
+      this.data = resp.user;
     } else {
       window.location.hash = '#/Login';
     }

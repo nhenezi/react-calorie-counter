@@ -135,7 +135,7 @@ class Meal(object):
         meal = models.UserMeal(
             name=data['name'],
             calories=data['calories'],
-            user=user,
+            user_id=user.id,
             time=data['time'] if 'time'in data else None
         )
         session.add(meal)

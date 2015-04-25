@@ -9,10 +9,13 @@ class Dashboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      meals: []
+      meals: [],
+      user: {},
+      total_calories: 0
     };
 
     this.onLoadMeals = this.onLoadMeals.bind(this);
+    this.updateUserInfo = this.updateUserInfo.bind(this);
   }
 
   componentDidMount() {
@@ -20,10 +23,18 @@ class Dashboard extends React.Component {
       actions.loadMeals.completed.listen(this.onLoadMeals),
       actions.createMeal.completed.listen(this.loadMeals),
       actions.updateMeal.completed.listen(this.loadMeals),
-      actions.deleteMeal.completed.listen(this.loadMeals)
+      actions.deleteMeal.completed.listen(this.loadMeals),
+      actions.login.completed.listen(this.updateUserInfo),
+      actions.auth.completed.listen(this.updateUserInfo)
     ];
 
     this.loadMeals();
+  }
+
+  updateUserInfo(resp) {
+    this.setState({
+      user: resp.user
+    });
   }
 
   loadMeals() {
@@ -32,8 +43,11 @@ class Dashboard extends React.Component {
 
   onLoadMeals(meals) {
     console.log('onLoadMeals', meals);
+    let total_calories = 0;
+    meals.forEach(m => total_calories += m.calories);
     this.setState({
-      meals: meals
+      meals: meals,
+      total_calories: total_calories
     });
   }
 
@@ -42,25 +56,21 @@ class Dashboard extends React.Component {
   }
 
   render() {
-    console.info("MM", this.state.meals);
+    let calorie_status = this.state.user.expected_calories - this.state.total_calories;
+    let message = calorie_status > 0 ?
+      <h4 className="green">+{calorie_status}</h4> :
+      <h4 className="red">{calorie_status}</h4>;
     return (
-      <div className="row">
+      <div className="row dashboard">
         <div className="col-sm-6 col-sm-offset-3">
           <div className="panel panel-default">
             <div className="panel-heading">
-              Meals
+              Meals<span className="pull-right">{message}</span>
             </div>
             <div className="panel-body">
               <div className="row">
                 <div className="col-sm-12">
                   <MealTable meals={this.state.meals}/>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-sm-12">
-                  <button className="btn btn-default">
-                    Add new meal
-                  </button>
                 </div>
               </div>
             </div>
@@ -262,10 +272,10 @@ class MealTableRow extends React.Component {
 
   render() {
     return (
-      <tr>
+      <tr className="mealTableRow">
         <td>{this.props.meal.name}</td>
         <td>{this.props.meal.calories}</td>
-        <td>{this.props.meal.time}</td>
+        <td>{moment(this.props.meal.time).fromNow()}</td>
         <td>
           <button className="btn btn-default" onClick={this.editMeal}>Edit</button>
           <button className="btn btn-danger" onClick={this.deleteMeal}>Delete</button>

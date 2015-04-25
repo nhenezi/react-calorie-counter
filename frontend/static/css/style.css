@@ -17,6 +17,18 @@ header > .container {
   margin-bottom: 0px;
 }
 
+.green {
+  color: green;
+}
+
+.red {
+  color: red;
+}
+
+.mealTableRow .btn-default {
+  margin-right: 5px;
+}
+
 .loginForm, .registrationForm {
   margin-top: 50px;
 }
