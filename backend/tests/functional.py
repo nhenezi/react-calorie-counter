@@ -430,13 +430,6 @@ class DeleteMealTest(unittest.TestCase):
         data = {
             'access_token': user1.access_token,
         }
-
-        user_meal = models.UserMeal(
-            user=user1,
-            meal_id=1
-        )
-        session.add(user_meal)
-        session.commit()
         session.close()
 
         r = requests.delete(
@@ -447,7 +440,6 @@ class DeleteMealTest(unittest.TestCase):
         self.assertIn('success', r.json())
         self.assertTrue(r.json()['success'])
         self.assertIn('meal', r.json())
-
 
 if __name__ == '__main__':
     unittest.main()

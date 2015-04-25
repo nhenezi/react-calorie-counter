@@ -86,7 +86,8 @@ class Meal(object):
         Retrieves meail information.
 
         access_token is required for this endpoint.
-        If meal_id is not set it will retrieve a list of all meals
+        If meal_id is not set it will retrieve a list of all meals for
+        current user
         """
         session = models.Session()
         user = models.User.get_from_token(access_token, session)
@@ -94,12 +95,12 @@ class Meal(object):
             session.close()
             return {'success': False, 'error': 'Invalid access_token'}
 
-        if meal_id == None:
-            meals = [m.to_json() for m in session.query(models.Meal).all()]
+        if meal_id is None:
+            meals = [m.to_json() for m in user.meals]
             session.close()
             return meals
         else:
-            meal = session.query(models.Meal).get(meal_id)
+            meal = session.query(models.UserMeal).get((meal_id, user.id))
             if not meal_id:
                 session.close()
                 return {}
@@ -130,16 +131,13 @@ class Meal(object):
             session.close()
             return {'success': False, 'error': 'Calories name attribute'}
 
-        meal = models.Meal(
+        meal = models.UserMeal(
             name=data['name'],
-            calories=data['calories']
+            calories=data['calories'],
+            user=user,
+            time=data['time'] if 'time'in data else None
         )
         session.add(meal)
-        user_meal = models.UserMeal(
-            user=user,
-            meal=meal
-        )
-        session.add(user_meal)
         session.commit()
         resp = meal.to_json()
         session.close()
@@ -149,7 +147,7 @@ class Meal(object):
 
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out(handler=json_handler)
-    def PUT(self):
+    def PUT(self, meal_id=None):
         """
         Updates meal information
         """
@@ -157,6 +155,8 @@ class Meal(object):
         data = cherrypy.request.json
         if 'access_token' not in data:
             return {'success': False, 'error': 'Invalid access_token'}
+        if meal_id is None:
+            return {'success': False, 'error': 'meal_id has to be specified'}
 
         session = models.Session()
         user = models.User.get_from_token(data['access_token'], session)
@@ -164,23 +164,18 @@ class Meal(object):
             session.close()
             return {'success': False, 'error': 'Invalid access_token'}
 
-        if 'name' not in data:
+        meal = session.query(models.UserMeal).get((meal_id, user.id))
+        if not meal:
             session.close()
-            return {'success': False, 'error': 'Missing name attribute'}
-        if 'calories' not in data:
-            session.close()
-            return {'success': False, 'error': 'Calories name attribute'}
+            return {'success': False, 'error': 'Invalid meal_id'}
 
-        meal = models.Meal(
-            name=data['name'],
-            calories=data['calories']
-        )
-        session.add(meal)
-        user_meal = models.UserMeal(
-            user=user,
-            meal=meal
-        )
-        session.add(user_meal)
+        if 'name' in data:
+            meal.name = data['name']
+        if 'calories' in data:
+            meal.calories = data['calories']
+        if 'time' in data:
+            meal.time = data['time']
+
         session.commit()
         resp = meal.to_json()
         session.close()
@@ -202,23 +197,17 @@ class Meal(object):
             session.close()
             return {'success': False, 'error': 'Invalid access_token'}
 
-        meal = session.query(models.Meal).get(meal_id)
+        meal = session.query(models.UserMeal).get((meal_id, user.id))
         if not meal:
             session.close()
             return {'success': False, 'error': 'Invalid meal_id'}
 
-        for user_meal in user.meals:
-            if user_meal.meal == meal:
-                user_meal.deleted = True
-                session.commit()
-                resp = {'success': True, 'meal': meal.to_json()}
-                session.close()
-
-                return resp
-
-
+        meal.deleted = True
+        session.commit()
+        resp = {'success': True, 'meal': meal.to_json()}
         session.close()
-        return {'success': False, 'error': 'Invalid meal_id'}
+
+        return resp
 
 class User(object):
     exposed = True

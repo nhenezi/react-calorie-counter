@@ -47,8 +47,6 @@ class User(Base):
     expected_calories = Column(Integer, default=2000)
     access_token = Column(String(255), default=random_auth_key)
 
-    meals = relationship('UserMeal')
-
     def __repr__(self):
         return "<User(%s, email=%s)>" % (self.id, self.email)
 
@@ -81,50 +79,36 @@ class User(Base):
 
         return data
 
-class Meal(Base):
-    __tablename__ = 'meal'
+class UserMeal(Base):
+    __tablename__ = 'user_meal'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(255))
     calories = Column(Integer)
-
-    def __repr__(self):
-        return "<Meal(%s, name=%s, cal=%s)" % (self.id, self.name,
-                                               self.calories)
-
-    def to_json(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'calories': self.calories
-        }
-
-class UserMeal(Base):
-    __tablename__ = 'user_meal'
-
     user_id = Column(Integer, ForeignKey('user.id'), primary_key=True)
-    meal_id = Column(Integer, ForeignKey('meal.id'), primary_key=True)
     time = Column(DateTime, default=datetime.datetime.utcnow)
     deleted = Column(Boolean, default=False)
 
-    user = relationship('User')
-    meal = relationship('Meal')
+    user = relationship('User', backref='meals')
 
     def __repr__(self):
-        return "<UserMeal(user=%s, meal=%s, time=%s, deleted=%s)" % (
-            self.user, self.meal, self.time, self.deleted
+        return "<UserMeal(%s, user=%s, cal=%s, time=%s, deleted=%s)" % (
+            self.id, self.user, self.calories, self.time, self.deleted
         )
 
     def to_json(self, direction=None):
         data = {
+            'id': self.id,
+            'name': self.name,
+            'calories': self.calories,
             'time': self.time,
             'deleted': self.deleted
         }
 
-        if direction == 'user':
-            data['meal'] = self.meal.to_json()
-        elif direction == 'meal':
+        if direction == 'meal':
             data['user'] = self.user.to_json()
+
+        return data
 
 if __name__ == '__main__':
     Base.metadata.create_all(engine)

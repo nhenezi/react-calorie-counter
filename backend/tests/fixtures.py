@@ -36,16 +36,18 @@ def init_users():
 
 def init_meals():
     session = models.Session()
-    meal1 = models.Meal(
+    meal1 = models.UserMeal(
         name='Tomato',
-        calories=100
+        calories=100,
+        user_id=1
     )
 
     session.add(meal1)
 
-    meal2 = models.Meal(
+    meal2 = models.UserMeal(
         name='Potato',
-        calories=150
+        calories=150,
+        user_id=1
     )
     session.add(meal2)
 
