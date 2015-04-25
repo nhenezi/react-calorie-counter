@@ -3,9 +3,18 @@ header {
 }
 
 footer {
-  position: absolute;
+  position: fixed;
   bottom: 0px;
   width: 100%;
+  max-height: 50px;
+}
+
+.container {
+  margin-bottom: 50px;
+}
+
+header > .container {
+  margin-bottom: 0px;
 }
 
 .loginForm, .registrationForm {
@@ -15,3 +24,4 @@ footer {
 .loginForm .btn-primary, .registrationForm .btn-primary {
   margin-right: 5px;
 }
+

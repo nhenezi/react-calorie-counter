@@ -17,6 +17,7 @@ const routes = (
   <Route name="app" path="/" handler={components.App}>
     <Route name="login" path="/login" handler={components.Login} />
     <Route name="register" path="/register" handler={components.Register} />
+    <Route name="dashboard" path="/dashboard" handler={components.Dashboard} />
   </Route>
 );
 

@@ -5,7 +5,8 @@ const components = {
   Login: require('./Login.jsx'),
   Footer: require('./Footer.jsx'),
   Header: require('./Header.jsx'),
-  Register: require('./Register.jsx')
+  Register: require('./Register.jsx'),
+  Dashboard: require('./Dashboard.jsx')
 };
 
 export default components;

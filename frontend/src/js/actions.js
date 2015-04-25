@@ -5,7 +5,12 @@ import Reflux from 'reflux';
 const async_actions = [
   'login',
   'auth',
-  'register'
+  'register',
+
+  'loadMeals',
+  'createMeal',
+  'updateMeal',
+  'deleteMeal'
 ];
 
 exports = {};
