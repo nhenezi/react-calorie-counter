@@ -62,9 +62,11 @@ class Login extends React.Component {
 
   render() {
     console.info('Rendering Login');
-    var error = this.state.valid ? '' :
+    let error = this.state.valid ? '' :
       (
-        <small className="error">{this.state.errorMessage}</small>
+      <div className="alert alert-danger">
+         {this.state.errorMessage}
+      </div>
     );
 
     var btn_class = this.state.disabledSubmit ? 'disabled': '';
@@ -73,6 +75,7 @@ class Login extends React.Component {
         <h3>Sign in to your Calorie Counter account</h3>
         <form name="LoginForm" onSubmit={this.handleSubmit}
           className="loginForm">
+          {error}
           <div className="form-group">
             <input type="email" className="form-control" ref="email"
               placeholder="Email..."/>
