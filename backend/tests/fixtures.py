@@ -47,7 +47,7 @@ def init_meals():
     meal2 = models.UserMeal(
         name='Potato',
         calories=150,
-        user_id=1
+        user_id=2
     )
     session.add(meal2)
 

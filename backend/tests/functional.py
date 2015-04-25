@@ -441,5 +441,75 @@ class DeleteMealTest(unittest.TestCase):
         self.assertTrue(r.json()['success'])
         self.assertIn('meal', r.json())
 
+class UpdateMealTest(unittest.TestCase):
+    def setUp(self):
+        fixtures.reload()
+
+    def test_invalid_access_token(self):
+        data = {
+            'access_token': 'ffff',
+        }
+        r = requests.put(
+            base_url + 'meal/1/',
+            data=simplejson.dumps(data),
+            headers={'content-type': 'application/json'}
+        )
+
+        self.assertTrue('success' in r.json())
+        self.assertFalse(r.json()['success'])
+
+    def test_missing_meal_id(self):
+        session = models.Session()
+        user1 = session.query(models.User).filter_by(email='user1@lc.com').first()
+        data = {
+            'access_token': user1.access_token,
+        }
+        session.close()
+        r = requests.put(
+            base_url + 'meal',
+            data=simplejson.dumps(data),
+            headers={'content-type': 'application/json'}
+        )
+
+        self.assertIn('success', r.json())
+        self.assertFalse(r.json()['success'])
+
+    def test_meal_id_not_associated_with_user(self):
+        session = models.Session()
+        user1 = session.query(models.User).filter_by(email='user1@lc.com').first()
+        data = {
+            'calories': 200,
+            'access_token': user1.access_token,
+        }
+        session.close()
+        r = requests.put(
+            base_url + 'meal/2/',
+            data=simplejson.dumps(data),
+            headers={'content-type': 'application/json'}
+        )
+
+        self.assertIn('success', r.json())
+        self.assertFalse(r.json()['success'])
+
+    def test_succesful_update(self):
+        session = models.Session()
+        user1 = session.query(models.User).filter_by(email='user1@lc.com').first()
+        data = {
+            'calories': 900,
+            'name': 'Orange',
+            'access_token': user1.access_token,
+        }
+        session.close()
+        r = requests.put(
+            base_url + 'meal/1/',
+            data=simplejson.dumps(data),
+            headers={'content-type': 'application/json'}
+        )
+
+        self.assertIn('success', r.json())
+        self.assertIn('meal', r.json())
+        self.assertEqual('Orange', r.json()['meal']['name'])
+        self.assertEqual(900, r.json()['meal']['calories'])
+
 if __name__ == '__main__':
     unittest.main()
