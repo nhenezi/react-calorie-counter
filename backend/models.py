@@ -47,6 +47,12 @@ class User(Base):
     expected_calories = Column(Integer, default=2000)
     access_token = Column(String(255), default=random_auth_key)
 
+    meals = relationship(
+        'UserMeal',
+        primaryjoin='and_(User.id==UserMeal.user_id, UserMeal.deleted==False)',
+        order_by='UserMeal.time'
+    )
+
     def __repr__(self):
         return "<User(%s, email=%s)>" % (self.id, self.email)
 
@@ -88,8 +94,6 @@ class UserMeal(Base):
     user_id = Column(Integer, ForeignKey('user.id'), primary_key=True)
     time = Column(DateTime, default=datetime.datetime.utcnow)
     deleted = Column(Boolean, default=False)
-
-    user = relationship('User', backref='meals')
 
     def __repr__(self):
         return "<UserMeal(%s, user=%s, cal=%s, time=%s, deleted=%s)" % (
