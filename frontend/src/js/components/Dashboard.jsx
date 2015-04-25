@@ -77,21 +77,36 @@ class Dashboard extends React.Component {
 class MealEditor extends React.Component {
   constructor(props) {
     super(props);
+
     this.onSubmitHandler = this.onSubmitHandler.bind(this);
     this.updateName = this.updateName.bind(this);
     this.updateDate = this.updateDate.bind(this);
     this.updateCalories = this.updateCalories.bind(this);
+    this.onEditMeal = this.onEditMeal.bind(this);
 
     this.state = {
       name: "",
       calories: "",
-      time: moment().format("YYYY-MM-DD HH:MM")
+      time: moment().format("YYYY-MM-DD HH:MM"),
+      editing: false
     };
   }
 
   componentDidMount() {
     this.unsubscribers = [
+      actions.editMeal.listen(this.onEditMeal)
     ];
+  }
+
+  onEditMeal(meal) {
+    console.log('IONEDIT', meal);
+    this.setState({
+      name: meal.name,
+      meal_id: meal.id,
+      calories: meal.calories,
+      time: moment(meal.time).format("YYYY-MM-DD HH:MM"),
+      editing: true
+    });
   }
 
   componentWillUnmount() {
@@ -102,13 +117,23 @@ class MealEditor extends React.Component {
     e.preventDefault();
     console.log('handling stuff');
 
-    console.log('creating meal');
-    actions.createMeal(this.state.name, this.state.calories,
-                       moment(this.state.time).format());
+    if (this.state.editing) {
+      console.log('Editing meal');
+      actions.updateMeal(this.state.meal_id, this.state.name,
+                         this.state.calories,
+                         moment(this.state.time).format());
+    } else {
+      console.log('creating meal');
+      actions.createMeal(this.state.name, this.state.calories,
+                         moment(this.state.time).format());
+    }
 
-    this.state.name = "";
-    this.state.calories = "";
-    this.state.time = moment().format('YYYY-MM-DD HH:MM');
+    this.setState({
+      name: "",
+      calories: "",
+      time: moment().format('YYYY-MM-DD HH:MM'),
+      editing: false
+    });
   }
 
   updateName(e) {
@@ -131,7 +156,7 @@ class MealEditor extends React.Component {
   }
 
   render() {
-    let title = "Create new meal";
+    let title = this.state.editing ? "Edit meal" : "Create new meal";
     return (
       <div className="panel panel-default">
         <div className="panel-heading">
@@ -224,10 +249,15 @@ class MealTableRow extends React.Component {
     };
 
     this.deleteMeal = this.deleteMeal.bind(this);
+    this.editMeal = this.editMeal.bind(this);
   }
 
   deleteMeal() {
     actions.deleteMeal(this.props.meal.id);
+  }
+
+  editMeal() {
+    actions.editMeal(this.props.meal);
   }
 
   render() {
@@ -237,7 +267,7 @@ class MealTableRow extends React.Component {
         <td>{this.props.meal.calories}</td>
         <td>{this.props.meal.time}</td>
         <td>
-          <button className="btn btn-default">Edit</button>
+          <button className="btn btn-default" onClick={this.editMeal}>Edit</button>
           <button className="btn btn-danger" onClick={this.deleteMeal}>Delete</button>
         </td>
       </tr>

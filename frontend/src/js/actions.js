@@ -13,9 +13,17 @@ const async_actions = [
   'deleteMeal'
 ];
 
+const actions = [
+  'editMeal'
+];
+
 exports = {};
 async_actions.map(action => {
   exports[action] = Reflux.createAction({asyncResult: true});
+});
+
+actions.map(action => {
+  exports[action] = Reflux.createAction();
 });
 
 export default exports;

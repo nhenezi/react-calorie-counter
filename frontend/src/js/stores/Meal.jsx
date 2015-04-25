@@ -13,6 +13,12 @@ var MealStore = Reflux.createStore({
     this.listenTo(actions.createMeal, 'createMeal');
     this.listenTo(actions.updateMeal, 'updateMeal');
     this.listenTo(actions.deleteMeal, 'deleteMeal');
+    this.listenTo(actions.editMeal, 'editMeal');
+  },
+
+  editMeal: function(meal) {
+    console.log('EDIT MEAL', meal);
+    this.trigger(meal);
   },
 
   loadMeals: function() {
