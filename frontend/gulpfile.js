@@ -4,11 +4,12 @@ var browserify = require('browserify');
 var watchify = require('watchify');
 var reactify = require('reactify');
 var concat = require('concat');
+var babelify = require('babelify');
 
 gulp.task('browserify', function() {
   var bundler = browserify({
     entries: ['./src/js/index.jsx'],
-    transform: [reactify],
+    transform: [babelify],
     debug: true,
     cache: {},
     packageCache: {},
