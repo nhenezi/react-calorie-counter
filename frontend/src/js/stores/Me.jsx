@@ -11,8 +11,10 @@ const Http = Utils.Http;
 var MeStore = Reflux.createStore({
   init: function() {
     this.listenTo(actions.login, 'login');
+    this.listenTo(actions.register, 'register');
 
     actions.login.completed.listen(this.onLogin);
+    actions.register.completed.listen(this.onLogin);
     actions.auth.completed.listen(this.onAuth);
     this.authenticate();
 
@@ -44,12 +46,18 @@ var MeStore = Reflux.createStore({
              actions.login.failed);
   },
 
+  register: function(email, password) {
+    const data = {email, password};
+    Http.post('user', data, actions.register.completed,
+              actions.register.failed);
+  },
+
   authenticate: function() {
     const access_token = Cookies.get('access_token');
 
     console.log('Authenticating user');
     Http.get('auth?access_token=' + access_token,
              actions.auth.completed,
-             actions.auth.failed)
+             actions.auth.failed);
   }
 });

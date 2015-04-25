@@ -9,6 +9,7 @@ const base_url = 'http://cc.com/api/';
 let Http = Reflux.createStore({
   init: function() {
     actions.login.completed.listen(this.onLogin);
+    actions.register.completed.listen(this.onLogin);
     actions.auth.completed.listen(this.onAuth);
   },
 
@@ -44,9 +45,7 @@ let Http = Reflux.createStore({
     if (resp.success === true) {
       console.log('Util: Login successful - setting cookie', Cookies);
       Cookies.set('access_token', resp.user.access_token);
-      window.CC = Cookies;
       this.access_token = resp.user.access_token;
-      console.log('testing', Cookies.get('access_token'), this.access_token);
       this.processRequestQueue();
     }
   },

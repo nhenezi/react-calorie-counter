@@ -4,7 +4,8 @@ import Reflux from 'reflux';
 
 const async_actions = [
   'login',
-  'auth'
+  'auth',
+  'register'
 ];
 
 exports = {};

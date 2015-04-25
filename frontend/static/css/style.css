@@ -8,10 +8,10 @@ footer {
   width: 100%;
 }
 
-.loginForm {
+.loginForm, .registrationForm {
   margin-top: 50px;
 }
 
-.loginForm .btn-primary {
+.loginForm .btn-primary, .registrationForm .btn-primary {
   margin-right: 5px;
 }
