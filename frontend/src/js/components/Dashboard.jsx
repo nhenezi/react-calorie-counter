@@ -222,6 +222,12 @@ class MealTableRow extends React.Component {
       calories: "",
       time: ""
     };
+
+    this.deleteMeal = this.deleteMeal.bind(this);
+  }
+
+  deleteMeal() {
+    actions.deleteMeal(this.props.meal.id);
   }
 
   render() {
@@ -232,7 +238,7 @@ class MealTableRow extends React.Component {
         <td>{this.props.meal.time}</td>
         <td>
           <button className="btn btn-default">Edit</button>
-          <button className="btn btn-danger">Delete</button>
+          <button className="btn btn-danger" onClick={this.deleteMeal}>Delete</button>
         </td>
       </tr>
     );

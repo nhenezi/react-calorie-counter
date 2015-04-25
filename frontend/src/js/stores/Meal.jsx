@@ -38,12 +38,12 @@ var MealStore = Reflux.createStore({
       data.time = time;
     }
 
-    Http.post('meal/' + meal_id, data, actions.updateMeal.completed,
+    Http.put('meal/' + meal_id, data, actions.updateMeal.completed,
              actions.updateMeal.completed);
   },
 
   deleteMeal: function(meal_id) {
-    Http.post('meal/' + meal_id, actions.deleteMeal.completed,
+    Http.delete('meal/' + meal_id, actions.deleteMeal.completed,
              actions.deleteMeal.completed);
   }
 });
