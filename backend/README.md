@@ -14,3 +14,9 @@
 - copy server configuration file `cp server.conf.example server.conf`
 - copy db configuration file `cp db.conf.example.yaml db.conf`
 - run `python models.py` to generate initial schema
+- run http server `python http.py`
+
+# Testing instructions
+
+- run http server in test mode `TEST=1 python http.py`
+- run functional tests `TEST=1 python tests/functional.py`
