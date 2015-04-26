@@ -287,6 +287,7 @@ class MealEditor extends React.Component {
     this.updateDate = this.updateDate.bind(this);
     this.updateCalories = this.updateCalories.bind(this);
     this.onEditMeal = this.onEditMeal.bind(this);
+    this.cancelEditing = this.cancelEditing.bind(this);
 
     this.state = {
       name: "",
@@ -310,6 +311,16 @@ class MealEditor extends React.Component {
       calories: meal.calories,
       time: moment(meal.time).format(TIME_FORMAT),
       editing: true
+    });
+  }
+
+  cancelEditing(e) {
+    e.preventDefault();
+    this.setState({
+      name: "",
+      calories: "",
+      time: moment().format(TIME_FORMAT),
+      editing: false
     });
   }
 
@@ -393,6 +404,13 @@ class MealEditor extends React.Component {
                   <button type='submit' className="btn btn-default">
                     Add new meal
                   </button>
+                  {
+                    this.state.editing ?
+                      <button onClick={this.cancelEditing} className="btn btn-danger">
+                        Cancel
+                      </button>
+                      : ''
+                  }
                 </div>
               </form>
             </div>
