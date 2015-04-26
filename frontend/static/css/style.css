@@ -38,6 +38,11 @@ header > .container {
   margin-left: 10px;
 }
 
+.notifications {
+  position: fixed;
+  right: 0px;
+}
+
 .mealTableRow .btn-default {
   margin-right: 5px;
 }

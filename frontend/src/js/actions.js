@@ -17,7 +17,8 @@ const async_actions = [
 
 const actions = [
   'getUserInfo',
-  'editMeal'
+  'editMeal',
+  'notification'
 ];
 
 exports = {};

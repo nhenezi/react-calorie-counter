@@ -98,7 +98,7 @@ class Dashboard extends React.Component {
     let calorie_status = (
       day_difference * this.state.user.expected_calories - this.state.total_calories
     );
-    const day = day_difference > 1 ? 'days' : 'day';
+    let day = day_difference > 1 ? 'days' : 'day';
 
     let message = calorie_status > 0 ?
       <span>
@@ -245,6 +245,7 @@ class UserSettings extends React.Component {
     e.preventDefault();
 
     actions.updateInfo(parseInt(this.state.expected_calories, 10));
+    actions.notification({text: "Settings updated"});
   }
 
   render() {
@@ -325,10 +326,12 @@ class MealEditor extends React.Component {
       actions.updateMeal(this.state.meal_id, this.state.name,
                          this.state.calories,
                          moment(this.state.time).format());
+      actions.notification({text: "Meal edited"});
     } else {
       console.log('creating meal');
       actions.createMeal(this.state.name, this.state.calories,
                          moment(this.state.time).format());
+      actions.notification({text: "Meal creted"});
     }
 
     this.setState({
