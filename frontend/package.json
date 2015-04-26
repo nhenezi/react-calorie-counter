@@ -7,14 +7,17 @@
     "test": "test"
   },
   "dependencies": {
+    "babelify": "^6.0.2",
     "browserify": "^9.0.8",
     "concat": "^1.0.0",
     "cookies-js": "^1.2.1",
     "gulp": "^3.8.11",
+    "moment": "^2.10.2",
     "react": "^0.13.2",
     "react-router": "^0.13.2",
     "reactify": "^1.1.0",
     "reflux": "^0.2.7",
+    "underscore": "^1.8.3",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.1.2"
   },
