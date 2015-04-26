@@ -235,10 +235,13 @@ class UserSettings extends React.Component {
   }
 
   componentWillReceiveProps(obj) {
-    console.log('Setting state', this.state, obj);
-    this.setState({
-      expected_calories: obj.user.expected_calories
-    });
+    console.debug('UserSettings:componentWillReceiveProps', this.state, obj);
+    if (this.state.expected_calories === "" ||
+        this.state.expected_calories === undefined) {
+      this.setState({
+        expected_calories: obj.user.expected_calories
+      });
+    }
   }
 
   onSubmitHandler(e) {
