@@ -99,17 +99,17 @@ class Dashboard extends React.Component {
     let calorie_status = (
       day_difference * this.state.user.expected_calories - this.state.total_calories
     );
-    let day = day_difference > 1 ? 'days' : 'day';
+    let day_str = day_difference > 1 ? day_difference + ' days' : 'day';
 
     let message = calorie_status > 0 ?
       <span>
-        Your calorie deficit for selected {day_difference} {day} is
+        Your calorie deficit for selected {day_str} is
         <span className="green"> {calorie_status}</span>
         cal
       </span>
         :
       <span>
-        Your calorie surplus for selected {day_difference} {day} is
+        Your calorie surplus for selected {day_str} is
         <span className="red"> {calorie_status}</span>
         cal
       </span>;
