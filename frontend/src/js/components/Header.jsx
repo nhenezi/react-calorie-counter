@@ -61,7 +61,7 @@ class Header extends React.Component {
             <div className="col-sm-2 col-sm-offset-7">
               {this.state.user.email}
             </div>
-            <div className="col-sm-1">
+            <div className="col-sm-1 logout">
               {logout}
             </div>
           </div>

@@ -47,6 +47,10 @@ header > .container {
   margin-right: 5px;
 }
 
+.logout a {
+  color: white;
+}
+
 .loginForm, .registrationForm {
   margin-top: 50px;
 }
