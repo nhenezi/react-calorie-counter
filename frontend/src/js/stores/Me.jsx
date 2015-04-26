@@ -13,6 +13,7 @@ var MeStore = Reflux.createStore({
     this.listenTo(actions.login, 'login');
     this.listenTo(actions.register, 'register');
     this.listenTo(actions.updateInfo, 'updateInfo');
+    this.listenTo(actions.logout, 'logout');
 
     actions.login.completed.listen(this.onLogin);
     actions.register.completed.listen(this.onLogin);
@@ -48,6 +49,12 @@ var MeStore = Reflux.createStore({
     const data = {email, password};
     Http.post('auth', data, actions.login.completed,
              actions.login.failed);
+  },
+
+  logout: function() {
+    Cookies.expire('access_token');
+    actions.logout.completed();
+    window.location.hash = '#/Login';
   },
 
   register: function(email, password) {

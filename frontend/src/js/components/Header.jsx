@@ -15,6 +15,7 @@ class Header extends React.Component {
     };
 
     this.updateUserInfo = this.updateUserInfo.bind(this);
+    this.logout = this.logout.bind(this);
   }
 
   componentDidMount() {
@@ -34,8 +35,14 @@ class Header extends React.Component {
     });
   }
 
+  logout(e) {
+    e.preventDefault();
+    actions.logout();
+  }
+
   render() {
-    let logout = this.state.user.id ? <a href="#/Logout">Logout</a> : '';
+    let logout = this.state.user.id ?
+      <a href="#/Logout" onClick={this.logout}>Logout</a> : '';
     return (
       <header>
         <div className="container">
