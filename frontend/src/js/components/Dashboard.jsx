@@ -5,7 +5,7 @@ import actions from '../actions.js';
 import moment from 'moment'
 import _ from 'underscore';
 
-const TIME_FORMAT = 'YYYY-MM-DD HH:MM';
+const TIME_FORMAT = 'YYYY-MM-DD HH:mm';
 
 class Dashboard extends React.Component {
   constructor(props) {
@@ -16,7 +16,7 @@ class Dashboard extends React.Component {
       user: {},
       filter_meals: {
         from: moment().startOf('day'),
-        to: moment().endOf('day')
+        to: moment().endOf('day').add(1, 'm')
       },
       total_calories: 0
     };
@@ -59,7 +59,9 @@ class Dashboard extends React.Component {
       return this.state.filter_meals.from <= moment(meal.time) &&
         moment(meal.time) <= this.state.filter_meals.to;
     });
-    this.setState({filtered_meals});
+    let total_calories = 0;
+    filtered_meals.forEach(m => total_calories += m.calories);
+    this.setState({filtered_meals, total_calories});
   }
 
   updateUserInfo(resp) {
@@ -77,11 +79,8 @@ class Dashboard extends React.Component {
   onLoadMeals(meals) {
     console.debug('Dashboard:onLoadMeals', meals);
     console.log('onLoadMeals', meals);
-    let total_calories = 0;
-    meals.forEach(m => total_calories += m.calories);
     this.setState({
-      meals: meals,
-      total_calories: total_calories
+      meals: meals
     }, this.filterMeals);
   }
 
@@ -91,10 +90,29 @@ class Dashboard extends React.Component {
 
   render() {
     console.debug('Dashboard:render', this.state, this.props);
-    let calorie_status = this.state.user.expected_calories - this.state.total_calories;
+    let day_difference = this.state.filter_meals.to.diff(
+      this.state.filter_meals.from, 'days'
+    );
+    day_difference = day_difference > 0 ? day_difference : 1;
+
+    let calorie_status = (
+      day_difference * this.state.user.expected_calories - this.state.total_calories
+    );
+    const day = day_difference > 1 ? 'days' : 'day';
+
     let message = calorie_status > 0 ?
-      <h4 className="green">+{calorie_status}</h4> :
-      <h4 className="red">{calorie_status}</h4>;
+      <span>
+        Your calorie deficit for selected {day_difference} {day} is
+        <span className="green"> {calorie_status}</span>
+        cal
+      </span>
+        :
+      <span>
+        Your calorie surplus for selected {day_difference} {day} is
+        <span className="red"> {calorie_status}</span>
+        cal
+      </span>;
+
     return (
       <div className="row dashboard">
         <div className="col-sm-3">
@@ -129,7 +147,7 @@ class Filter extends React.Component {
 
     this.state = {
       filter_from: moment().startOf('day').format(TIME_FORMAT),
-      filter_to: moment().endOf('day').format(TIME_FORMAT)
+      filter_to: moment().endOf('day').add(1, 'm').format(TIME_FORMAT)
     };
 
     this.updateFilterTo = this.updateFilterTo.bind(this);
