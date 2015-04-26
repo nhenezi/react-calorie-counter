@@ -3,19 +3,28 @@
 import React from 'react';
 import actions from '../actions.js';
 import moment from 'moment'
+import _ from 'underscore';
 
+const TIME_FORMAT = 'YYYY-MM-DD HH:MM';
 
 class Dashboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       meals: [],
+      filtered_meals: [],
       user: {},
+      filter_meals: {
+        from: moment().startOf('day'),
+        to: moment().endOf('day')
+      },
       total_calories: 0
     };
 
     this.onLoadMeals = this.onLoadMeals.bind(this);
     this.updateUserInfo = this.updateUserInfo.bind(this);
+    this.onFilterUpdate = this.onFilterUpdate.bind(this);
+    this.filterMeals = this.filterMeals.bind(this);
   }
 
   componentDidMount() {
@@ -34,6 +43,25 @@ class Dashboard extends React.Component {
     actions.getUserInfo({});
   }
 
+  onFilterUpdate(from, to) {
+    console.debug('Dashboard:onFilterUpdate', this.state, from, to);
+    this.setState({
+      filter_meals: {
+        from: moment(from),
+        to: moment(to)
+      }
+    }, this.filterMeals);
+  }
+
+  filterMeals() {
+    console.debug('Dashboard:filterMeals', this.state);
+    let filtered_meals = _.filter(this.state.meals, meal => {
+      return this.state.filter_meals.from <= moment(meal.time) &&
+        moment(meal.time) <= this.state.filter_meals.to;
+    });
+    this.setState({filtered_meals});
+  }
+
   updateUserInfo(resp) {
     console.debug('Dashboard:updateUserInfo', resp);
     this.setState({
@@ -42,7 +70,7 @@ class Dashboard extends React.Component {
   }
 
   loadMeals() {
-    console.debug('Dashboard:loadMeas');
+    console.debug('Dashboard:loadMeals');
     actions.loadMeals();
   }
 
@@ -54,7 +82,7 @@ class Dashboard extends React.Component {
     this.setState({
       meals: meals,
       total_calories: total_calories
-    });
+    }, this.filterMeals);
   }
 
   componentWillUnmount() {
@@ -73,6 +101,7 @@ class Dashboard extends React.Component {
           <UserSettings user={this.state.user} />
         </div>
         <div className="col-sm-6">
+          <Filter onFilterUpdate={this.onFilterUpdate}/>
           <div className="panel panel-default">
             <div className="panel-heading">
               Meals<span className="pull-right">{message}</span>
@@ -80,7 +109,7 @@ class Dashboard extends React.Component {
             <div className="panel-body">
               <div className="row">
                 <div className="col-sm-12">
-                  <MealTable meals={this.state.meals}/>
+                  <MealTable meals={this.state.filtered_meals}/>
                 </div>
               </div>
             </div>
@@ -91,6 +120,75 @@ class Dashboard extends React.Component {
         </div>
       </div>
     );
+  }
+}
+
+class Filter extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      filter_from: moment().startOf('day').format(TIME_FORMAT),
+      filter_to: moment().endOf('day').format(TIME_FORMAT)
+    };
+
+    this.updateFilterTo = this.updateFilterTo.bind(this);
+    this.updateFilterFrom = this.updateFilterFrom.bind(this);
+    this.onSubmitHandler = this.onSubmitHandler.bind(this);
+  }
+
+  updateFilterFrom(e) {
+    this.setState({
+      filter_from: e.target.value
+    });
+  }
+
+  updateFilterTo(e) {
+    this.setState({
+      filter_to: e.target.value
+    });
+  }
+
+  onSubmitHandler(e) {
+    e.preventDefault();
+
+    if (this.props.onFilterUpdate) {
+      this.props.onFilterUpdate(this.state.filter_from,
+                              this.state.filter_to);
+    }
+  }
+
+  render() {
+    return (
+      <div className="row">
+        <div className="col-sm-12">
+          <div className="panel panel-default">
+            <div className="panel-heading">
+              Display meals and calories
+            </div>
+            <div className="panel-body">
+              <form className="form-inline" onSubmit={this.onSubmitHandler}>
+                <div className="form-group">
+                  <label for="filterFrom">From</label>
+                  <input type="text" className="form-control" ref="filterFrom"
+                    onChange={this.updateFilterFrom} value={this.state.filter_from}/>
+                </div>
+                <div className="form-group">
+                  <label for="fiterTo">To</label>
+                  <input type="text" className="form-control" ref="filterTo"
+                    name="filterTo" id="filterTo"
+                    onChange={this.updateFilterTo} value={this.state.filter_to}/>
+                </div>
+                <div className="form-group actions">
+                  <button type="submit" className="btn btn-default">Update</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+
   }
 }
 
@@ -174,7 +272,7 @@ class MealEditor extends React.Component {
     this.state = {
       name: "",
       calories: "",
-      time: moment().format("YYYY-MM-DD HH:MM"),
+      time: moment().format(TIME_FORMAT),
       editing: false
     };
   }
@@ -191,7 +289,7 @@ class MealEditor extends React.Component {
       name: meal.name,
       meal_id: meal.id,
       calories: meal.calories,
-      time: moment(meal.time).format("YYYY-MM-DD HH:MM"),
+      time: moment(meal.time).format(TIME_FORMAT),
       editing: true
     });
   }
@@ -218,7 +316,7 @@ class MealEditor extends React.Component {
     this.setState({
       name: "",
       calories: "",
-      time: moment().format('YYYY-MM-DD HH:MM'),
+      time: moment().format(TIME_FORMAT),
       editing: false
     });
   }

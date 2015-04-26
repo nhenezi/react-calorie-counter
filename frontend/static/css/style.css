@@ -25,6 +25,19 @@ header > .container {
   color: red;
 }
 
+.form-inline label {
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.form-inline input {
+  max-width: 150px;
+}
+
+.form-inline .actions {
+  margin-left: 10px;
+}
+
 .mealTableRow .btn-default {
   margin-right: 5px;
 }
