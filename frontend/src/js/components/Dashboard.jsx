@@ -59,6 +59,7 @@ class Dashboard extends React.Component {
       return this.state.filter_meals.from <= moment(meal.time) &&
         moment(meal.time) <= this.state.filter_meals.to;
     });
+    filtered_meals = _.sortBy(filtered_meals, m => moment(m.time));
     let total_calories = 0;
     filtered_meals.forEach(m => total_calories += m.calories);
     this.setState({filtered_meals, total_calories});
