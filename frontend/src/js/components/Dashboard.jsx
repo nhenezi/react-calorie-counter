@@ -405,7 +405,7 @@ class MealEditor extends React.Component {
                 </div>
                 <div className="form-group">
                   <button type='submit' className="btn btn-default">
-                    Add new meal
+                    {this.state.editing ? 'Edit meal' : 'Add new meal'}
                   </button>
                   {
                     this.state.editing ?
