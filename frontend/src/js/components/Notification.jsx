@@ -23,7 +23,7 @@ class Notification extends React.Component {
     let messages = this.state.messages;
     message.id = this.state.nextMessage;
     messages.push(message);
-    this.setState({messages, nextMessage: this.state.nextMessage++});
+    this.setState({messages, nextMessage: ++this.state.nextMessage});
     setTimeout(() => {
       this.removeNotification(message);
     }, this.TIMEOUT);
