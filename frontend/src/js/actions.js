@@ -16,6 +16,7 @@ const async_actions = [
 ];
 
 const actions = [
+  'getUserInfo',
   'editMeal'
 ];
 

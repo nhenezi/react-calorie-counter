@@ -26,24 +26,28 @@ class Dashboard extends React.Component {
       actions.deleteMeal.completed.listen(this.loadMeals),
       actions.login.completed.listen(this.updateUserInfo),
       actions.auth.completed.listen(this.updateUserInfo),
+      actions.getUserInfo.listen(this.updateUserInfo),
       actions.updateInfo.completed.listen(this.updateUserInfo)
     ];
 
     this.loadMeals();
+    actions.getUserInfo({});
   }
 
   updateUserInfo(resp) {
-    console.info("Updating user info");
+    console.debug('Dashboard:updateUserInfo', resp);
     this.setState({
       user: resp.user
     });
   }
 
   loadMeals() {
+    console.debug('Dashboard:loadMeas');
     actions.loadMeals();
   }
 
   onLoadMeals(meals) {
+    console.debug('Dashboard:onLoadMeals', meals);
     console.log('onLoadMeals', meals);
     let total_calories = 0;
     meals.forEach(m => total_calories += m.calories);
@@ -58,6 +62,7 @@ class Dashboard extends React.Component {
   }
 
   render() {
+    console.debug('Dashboard:render', this.state, this.props);
     let calorie_status = this.state.user.expected_calories - this.state.total_calories;
     let message = calorie_status > 0 ?
       <h4 className="green">+{calorie_status}</h4> :

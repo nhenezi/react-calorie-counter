@@ -14,6 +14,7 @@ var MeStore = Reflux.createStore({
     this.listenTo(actions.register, 'register');
     this.listenTo(actions.updateInfo, 'updateInfo');
     this.listenTo(actions.logout, 'logout');
+    this.listenTo(actions.getUserInfo, 'getUserInfo');
 
     actions.login.completed.listen(this.onLogin);
     actions.register.completed.listen(this.onLogin);
@@ -23,6 +24,11 @@ var MeStore = Reflux.createStore({
     this.access_token = false;
     this.logged_in = false;
     this.data = {};
+  },
+
+  getUserInfo: function(resp) {
+    resp.user = this.data;
+    this.trigger();
   },
 
   onLogin: function(resp) {

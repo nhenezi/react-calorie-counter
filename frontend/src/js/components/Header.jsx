@@ -30,14 +30,22 @@ class Header extends React.Component {
   }
 
   updateUserInfo(resp) {
-    this.setState({
-      user: resp.user
-    });
+    console.debug('Header:updateUserInfo', resp);
+    if (resp.success === true) {
+      this.setState({
+        user: resp.user
+      });
+    }
   }
 
   logout(e) {
     e.preventDefault();
     actions.logout();
+    this.setState({
+      user: {
+        email: ""
+      }
+    });
   }
 
   render() {
